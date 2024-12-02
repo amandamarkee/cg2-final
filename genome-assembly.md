@@ -292,6 +292,6 @@ conda activate busco
 busco -o busco_insecta -i onigra_hifiasm.asm.bp.p_ctg.fasta -l insecta_odb10 -c 4 -m genome --offline
 ```
 
-Genome summary results including BUSCO completeness, duplication, and important genome summary statistics can be found below:
+Genome summary results including BUSCO completeness, duplication, and statistics can be found below:
 <img width="700" alt="Screenshot 2024-12-02 at 6 25 01 PM" src="https://github.com/user-attachments/assets/1ed1fa86-783d-4572-a439-48675836813c">
 
