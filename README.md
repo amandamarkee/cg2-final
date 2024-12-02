@@ -22,10 +22,10 @@ Here, I take a comparative genomics approach to comparing silk genes between the
 
 ## Bioinformatic workflow for _Argiope argentata_ and _Oligotoma nigra_ assembly and annotation
 
-1) Raw Read Quality Control with FastQC
+1) Genome Size Prediction with KMC/GenomeScope
 2) Whole Genome Assembly with Hifiasm
-3) Assembly Quality Control with BUSCO, assemblystats.py & QUAST, and duplicate purging
-4) Putitive Spidroin Identification with BLASTx and BioPython
+3) Assembly Quality Control with BUSCO and assemblystats.py 
+4) Putitive Spidroin/Fibroin Identification with BLASTx and BioPython
 5) Spidroin/Fibroin Extraction with Geneious and Samtools
 6) Annotation of Intron/Exon Boundaries _ab initio_ or trained with Augustus
 7) Whole Genome Annotation with Braker3
