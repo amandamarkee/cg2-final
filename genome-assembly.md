@@ -55,7 +55,7 @@ The output looks as follows:
 - ~50x whole genome coverage, with 26.7x heterozygous coverage (kcov), meaning k-mer coverage for heterozygous bases.
   
 
-<img width="791" alt="Screenshot 2024-12-02 at 2 39 01 PM" src="https://github.com/user-attachments/assets/90f8c973-3274-4a3d-ba50-b37d4189eeb5">
+<img width="700" alt="Screenshot 2024-12-02 at 2 39 01 PM" src="https://github.com/user-attachments/assets/90f8c973-3274-4a3d-ba50-b37d4189eeb5">
 <img width="636" alt="Screenshot 2024-12-02 at 2 39 10 PM" src="https://github.com/user-attachments/assets/2052294a-f1b5-433a-8b0a-be44ce94aaf1">
 
 <br>
@@ -63,7 +63,7 @@ The output looks as follows:
 
 [_Oligotoma nigra_](http://genomescope.org/genomescope2.0/analysis.php?code=OUPPsCUp1f63PBTieO1N) KMC results can be found here with the following results:
 
-<img width="804" alt="Screenshot 2024-12-02 at 2 41 38 PM" src="https://github.com/user-attachments/assets/0752523f-d905-4a40-b8c4-5757cba42f9c">
+<img width="700" alt="Screenshot 2024-12-02 at 2 41 38 PM" src="https://github.com/user-attachments/assets/0752523f-d905-4a40-b8c4-5757cba42f9c">
 <img width="643" alt="Screenshot 2024-12-02 at 2 41 49 PM" src="https://github.com/user-attachments/assets/21fd8b99-7873-4bcc-846d-67403413862d">
 
 - 2,607,416,052bp in predicted size, in otherwords approximately 2.6 Gbp
