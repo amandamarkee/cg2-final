@@ -1,4 +1,4 @@
-# Genomic characterization of spider silk genes in the silver garden spider _Argiope argentata_
+# Genomic characterization of arthropod silk genes in the silver garden spider _Argiope argentata_ and the black webspinner _Oligotoma nigra_
 
 The silver garden spider (_Argiope argentata_) is an orb-weaving spider in the family Araneidae, with seven distinct types of silk: major ampullate (MaSp), minor ampullate (MiSp), flagelliform (FlAg), aggregate (AgSp), aciniform (AcSp), tubuliform (TuSp) and pyriform (PySp). Each silk type is characterized based on the gland they originate from, and have variation in the properties of silk the produce. Spider fibroins, further referred to as _spidroins_, are a family of silk proteins produced by long, highly repetitive, glycine-rich genes.
 
@@ -7,7 +7,11 @@ The silver garden spider (_Argiope argentata_) is an orb-weaving spider in the f
 <br/><br/>
 
 
-This repository will serve as documenting the bioinformatic workflow required for full assembly and annotation of six _Argiope argentata_ genomes from disperate populations in California (N=5) and Texas (N=1), as part of the first chapter of my dissertation. The ultimate goal is to assess interspecfic variation (allelic variation) of different spidroins to glean insight into the diversification and molecular evolution of this unique gene family. 
+The black webspinner (_Oligotoma nigra_) is a non-model insect group in the order Embioptera. Webspinners use silk to build protetive encasements for their colonies known as silken galleries. Like other insects, the primary silk gene responsible for producing silk-proteins is the _heavy chain fibroin_, referred to as H-fib in most insect silk literature. 
+
+![O  nigra silk, female](https://github.com/user-attachments/assets/75a4deb8-7055-4f10-94aa-4185ca7ac3f9)
+
+Here, I take a comparative genomics approach to comparing silk genes between these two distantly related arthropod species, to better understand the convergent evolution of the silk system. By characterizing unknown spidroins and fibroins, I hope to glean insight into the diversification and molecular evolution of silk genes in these two species. In order to accomplish this, here I sequence two new long-read genomes using PacBio Revio to produce high-quality referenc genomes for each taxa. I use a combination of bioinformatic tools to perform whole genome feature annotation (also known as structural annotatiot), and through manual annotation of silk genes based on homology and RNAseq mapping.
 
 
 ## Bioinformatic workflow for _Argiope argentata_ and _Oligotoma nigra_ assembly and annotation
