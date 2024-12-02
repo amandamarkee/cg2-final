@@ -245,7 +245,53 @@ The results will look like the following table for _A.argentata_ (1.9 Gbp) and _
 
 <img width="310" alt="Screenshot 2024-12-02 at 3 51 49 PM" src="https://github.com/user-attachments/assets/4351cdc3-b4a0-444c-8cb7-6578cb9ac888">
 
-<img width="310" alt="Screenshot 2024-12-02 at 3 54 26 PM" src="https://github.com/user-attachments/assets/c9c3cb07-81f4-4f49-8629-ac2416ea88ff">
+<img width="310" alt="Screenshot 2024-12-02 at 3 54 26 PM" src="https://github.com/user-attachments/assets/c9c3cb07-81f4-4f49-8629-ac2416ea88ff"> <br/>
 
-Lastly, I assessed presence of benchmark universial single copy orthologs 
+Lastly, I assessed presence of benchmark universial single copy orthologs. To do this, I ran BUSCO using the arachnida_odb10 database for _A. argentata_ and insecta_odb10 database for _O. nigra_ in the following scripts:
+
+```
+#!/bin/bash
+#SBATCH --time=22:00:00   # walltime
+#SBATCH --ntasks=24   # number of processor cores (i.e. tasks)
+#SBATCH --nodes=1   # number of nodes
+#SBATCH --mem-per-cpu=10240M   # memory per CPU core
+#SBATCH -J "aarg_busco"   # job name
+#SBATCH --mail-user=amarkee@amnh.org   # email address
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+
+
+# Set the max number of threads to use for programs using OpenMP.
+export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
+
+# LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
+module load miniconda3/4.12-pws-472
+conda activate busco
+busco -o busco_arachnida -i aarg_hifiasm.asm.bp.p_ctg.fasta -l arachnida_odb10 -c 24 -m genome --offline
+```
+
+```
+#!/bin/bash
+
+#SBATCH --time=12:00:00   # walltime
+#SBATCH --ntasks=4   # number of processor cores (i.e. tasks)
+#SBATCH --nodes=1   # number of nodes
+#SBATCH --mem-per-cpu=4096M   # memory per CPU core
+#SBATCH -J "onigra_busco"   # job name
+#SBATCH --mail-user=amarkee@amnh.org   # email address
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+
+
+# Set the max number of threads to use for programs using OpenMP. Should be <= ppn. Does nothing if the program doesn't use OpenMP.
+export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
+
+# LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
+module load miniconda3/4.12-pws-472
+conda activate busco
+busco -o busco_insecta -i onigra_hifiasm.asm.bp.p_ctg.fasta -l insecta_odb10 -c 4 -m genome --offline
+```
+
+Genome summary results including BUSCO completeness, duplication, and important genome summary statistics can be found below:
+<img width="700" alt="Screenshot 2024-12-02 at 6 25 01 PM" src="https://github.com/user-attachments/assets/1ed1fa86-783d-4572-a439-48675836813c">
 
