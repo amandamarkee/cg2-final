@@ -1,6 +1,6 @@
 # Genome Assembly for _Argiope argentata_ and _Oligotoma nigra_
 
-## Estimating Genome Size from Raw Reads (KMC)
+## 01 Estimating Genome Size from Raw Reads (KMC)
 - [K-Mer Counter (KMC)](https://github.com/refresh-bio/KMC) is a quality assessment tool bioinformatics tool designed to efficiently count the occurrences of k-mers (short DNA sequences of length k) within a set of reads from a genome/
 
 First, to run KMC and estimate genome size, create a directory for the output data and script.
@@ -8,7 +8,7 @@ First, to run KMC and estimate genome size, create a directory for the output da
 mkdir kmc
 ```
 
-I then copied the following script into the new directory that contained the raw Hifi reads:
+I then copied the following script called kmc.sh into the new directory that contained the raw Hifi reads:
 ```
 #!/bin/bash
 #SBATCH --time=6:00:00   # walltime
@@ -39,6 +39,11 @@ fastqc m84100_240417_025302_s2_fastq.gz # raw reads for O.nigra in directory
 fastqc m84100_240128_044323_s3.hifi_reads.bc1045.fastq.gz # raw reads for A.argentata in directory
 ```
 
+I executed the script using the following code:
+```
+sbatch kmc.sh
+```
+
 Once KMC outputs the `reads.histo` file, this can be visualized in the [GenomeScope2 webserver](http://genomescope.org/genomescope2.0/). 
 Once there, I set the kmer length is set to `21` and the ploidy to `2` based on each organisms biology. Then, I dragged and dropped each `reads.histo` file into the submission box. 
 The output looks as follows:
@@ -64,5 +69,183 @@ The output looks as follows:
 - 2,607,416,052bp in predicted size, in otherwords approximately 2.6 Gbp
 - 98.1% homozygosity, and 1.93% heterozygosity across the genome
 - ~30x whole genome coverage, with 13.9x whole genome coverage (kcov) meaning k-mer coverage for heterozygous bases.
+
+
+## 02 Assembling Whole Genome (Contigs) in Hifiasm
+
+[Hifiasm](https://github.com/chhylp123/hifiasm) is a tool for assembling genomes, especially for PacBio HiFi reads. It is available in `bioconda`, but also as source code that you can download and build if you so desire. There are a few different options that you can explore at the [hifiasm GitHub](https://github.com/chhylp123/hifiasm). 
+
+First, to run Hifiam to assemble genome into contigs, create a directory for the output data and script.
+```
+mkdir hifiasm
+```
+
+I then copied the following script named hifiasm.sh into the new directory that contained the raw Hifi reads:
+```
+#!/bin/bash
+
+#SBATCH --time=24:00:00   # walltime
+#SBATCH --ntasks=24   # number of processor cores (i.e. tasks)
+#SBATCH --nodes=1   # number of nodes
+#SBATCH --mem-per-cpu=14336M   # memory per CPU core
+#SBATCH -J "hifiasm"   # job name
+#SBATCH --mail-user=amarkee@amnh.org   # email address
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+
+
+# Set the max number of threads to use for programs using OpenMP. Should be <= ppn. Does nothing if the program doesn't use OpenMP.
+export OMP_NUM_THREADS=$SLURM_CPUS_ON_NODE
+
+# LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
+module load miniconda3/4.12-pws-472
+conda activate hifiasm
+
+hifiasm -o $1.asm -l 3 -t $SLURM_NPROCS $2
+
+awk '$1 ~/S/ {print ">"$2"\n"$3}' $1.asm.bp.p_ctg.gfa > $1.asm.bp.p_ctg.fasta
+awk '$1 ~/S/ {print ">"$2"\n"$3}' $1.asm.bp.hap1.p_ctg.gfa > $1.asm.bp.hap1.p_ctg.fasta
+awk '$1 ~/S/ {print ">"$2"\n"$3}' $1.asm.bp.hap2.p_ctg.gfa > $1.asm.bp.hap2.p_ctg.fasta
+```
+
+I executed the script using the following code:
+```
+sbatch hifiasm.sh species_fastq.gz
+```
+
+This script will take the input fastq.gz as the first argument ($1), and run the assembly, then convert output .gfa files to usable fasta files.
+
+## 03 Quality Assessment for Genome Assembly
+
+Lastly, to assess that the assemblies were of high enough quality for downstream analyses, I assess genome statistics using assemblystats.py, as well as BUSCO for completeness. The [assemblystats.py script](https://github.com/MikeTrizna/assembly_stats/tree/0.1.4) created by Mike Trizna pulls genome quality statistics such as N50/L50 and total assembly length from output from Hifiasm.
+
+First, I copied this script into my working directory, and called it assemblystats.py
+
+```
+#!/usr/bin/env python
+
+import numpy as np
+from itertools import groupby
+import json
+import sys
+
+
+def fasta_iter(fasta_file):
+    """Takes a FASTA file, and produces a generator of Header and Sequences.
+    This is a memory-efficient way of analyzing a FASTA files -- without
+    reading the entire file into memory.
+
+    Parameters
+    ----------
+    fasta_file : str
+        The file location of the FASTA file
+
+    Returns
+    -------
+    header: str
+        The string contained in the header portion of the sequence record
+        (everything after the '>')
+    seq: str
+        The sequence portion of the sequence record
+    """
+
+    fh = open(fasta_file)
+    fa_iter = (x[1] for x in groupby(fh, lambda line: line[0] == ">"))
+    for header in fa_iter:
+        # drop the ">"
+        header = next(header)[1:].strip()
+        # join all sequence lines to one.
+        seq = "".join(s.upper().strip() for s in next(fa_iter))
+        yield header, seq
+
+
+def read_genome(fasta_file):
+    """Takes a FASTA file, and produces 2 lists of sequence lengths. It also
+    calculates the GC Content, since this is the only statistic that is not
+    calculated based on sequence lengths.
+
+    Parameters
+    ----------
+    fasta_file : str
+        The file location of the FASTA file
+
+    Returns
+    -------
+    contig_lens: list
+        A list of lengths of all contigs in the genome.
+    scaffold_lens: list
+        A list of lengths of all scaffolds in the genome.
+    gc_cont: float
+        The percentage of total basepairs in the genome that are either G or C.
+    """
+
+    gc = 0
+    total_len = 0
+    contig_lens = []
+    scaffold_lens = []
+    for _, seq in fasta_iter(fasta_file):
+        scaffold_lens.append(len(seq))
+        if "NN" in seq:
+            contig_list = seq.split("NN")
+        else:
+            contig_list = [seq]
+        for contig in contig_list:
+            if len(contig):
+                gc += contig.count('G') + contig.count('C')
+                total_len += len(contig)
+                contig_lens.append(len(contig))
+    gc_cont = (gc / total_len) * 100
+    return contig_lens, scaffold_lens, gc_cont
+
+
+def calculate_stats(seq_lens, gc_cont):
+    stats = {}
+    seq_array = np.array(seq_lens)
+    stats['sequence_count'] = seq_array.size
+    stats['gc_content'] = gc_cont
+    sorted_lens = seq_array[np.argsort(-seq_array)]
+    stats['longest'] = int(sorted_lens[0])
+    stats['shortest'] = int(sorted_lens[-1])
+    stats['median'] = np.median(sorted_lens)
+    stats['mean'] = np.mean(sorted_lens)
+    stats['total_bps'] = int(np.sum(sorted_lens))
+    csum = np.cumsum(sorted_lens)
+    for level in [10, 20, 30, 40, 50]:
+        nx = int(stats['total_bps'] * (level / 100))
+        csumn = min(csum[csum >= nx])
+        l_level = int(np.where(csum == csumn)[0])
+        n_level = int(sorted_lens[l_level])
+
+        stats['L' + str(level)] = l_level
+        stats['N' + str(level)] = n_level
+    return stats
+
+
+if __name__ == "__main__":
+    infilename = sys.argv[1]
+    contig_lens, scaffold_lens, gc_cont = read_genome(infilename)
+    contig_stats = calculate_stats(contig_lens, gc_cont)
+    scaffold_stats = calculate_stats(scaffold_lens, gc_cont)
+    stat_output = {'Contig Stats': contig_stats,
+                   'Scaffold Stats': scaffold_stats}
+    print(json.dumps(stat_output, indent=2, sort_keys=True))
+```
+
+Next, I changed permissions as follows to allow execution permissions.
+```
+chmod +x assemblystats.py
+```
+
+Lastly, I ran the assemblystats.py script on the newly generated fasta file of the fga in the format of scriptfilepath/scirptname.py nameofassembly.fa and save the results as a text file.
+```
+python assemblystats.py hifiasm_output.asm.bp.p_ctg.fa >> hifiasm_asmstats.txt
+```
+
+The results will look like the following table for _A.argentata_ (1.9 Gbp) and _O.nigra_ (3.1 Gbp)respectively:
+
+<img width="310" alt="Screenshot 2024-12-02 at 3 51 49 PM" src="https://github.com/user-attachments/assets/4351cdc3-b4a0-444c-8cb7-6578cb9ac888">
+
+<img width="298" alt="Screenshot 2024-12-02 at 3 54 26 PM" src="https://github.com/user-attachments/assets/c9c3cb07-81f4-4f49-8629-ac2416ea88ff">
+
 
 
