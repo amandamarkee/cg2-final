@@ -56,7 +56,7 @@ The output looks as follows:
   
 
 <img width="700" alt="Screenshot 2024-12-02 at 2 39 01 PM" src="https://github.com/user-attachments/assets/90f8c973-3274-4a3d-ba50-b37d4189eeb5">
-<img width="636" alt="Screenshot 2024-12-02 at 2 39 10 PM" src="https://github.com/user-attachments/assets/2052294a-f1b5-433a-8b0a-be44ce94aaf1">
+<img width="700" alt="Screenshot 2024-12-02 at 2 39 10 PM" src="https://github.com/user-attachments/assets/2052294a-f1b5-433a-8b0a-be44ce94aaf1">
 
 <br>
 <br>
@@ -64,7 +64,7 @@ The output looks as follows:
 [_Oligotoma nigra_](http://genomescope.org/genomescope2.0/analysis.php?code=OUPPsCUp1f63PBTieO1N) KMC results can be found here with the following results:
 
 <img width="700" alt="Screenshot 2024-12-02 at 2 41 38 PM" src="https://github.com/user-attachments/assets/0752523f-d905-4a40-b8c4-5757cba42f9c">
-<img width="643" alt="Screenshot 2024-12-02 at 2 41 49 PM" src="https://github.com/user-attachments/assets/21fd8b99-7873-4bcc-846d-67403413862d">
+<img width="700" alt="Screenshot 2024-12-02 at 2 41 49 PM" src="https://github.com/user-attachments/assets/21fd8b99-7873-4bcc-846d-67403413862d">
 
 - 2,607,416,052bp in predicted size, in otherwords approximately 2.6 Gbp
 - 98.1% homozygosity, and 1.93% heterozygosity across the genome
@@ -236,7 +236,7 @@ Next, I changed permissions as follows to allow execution permissions.
 chmod +x assemblystats.py
 ```
 
-Lastly, I ran the assemblystats.py script on the newly generated fasta file of the fga in the format of scriptfilepath/scirptname.py nameofassembly.fa and save the results as a text file.
+I ran the assemblystats.py script on the newly generated fasta file of the fga in the format of scriptfilepath/scirptname.py nameofassembly.fa and save the results as a text file.
 ```
 python assemblystats.py hifiasm_output.asm.bp.p_ctg.fa >> hifiasm_asmstats.txt
 ```
@@ -245,7 +245,7 @@ The results will look like the following table for _A.argentata_ (1.9 Gbp) and _
 
 <img width="310" alt="Screenshot 2024-12-02 at 3 51 49 PM" src="https://github.com/user-attachments/assets/4351cdc3-b4a0-444c-8cb7-6578cb9ac888">
 
-<img width="298" alt="Screenshot 2024-12-02 at 3 54 26 PM" src="https://github.com/user-attachments/assets/c9c3cb07-81f4-4f49-8629-ac2416ea88ff">
+<img width="310" alt="Screenshot 2024-12-02 at 3 54 26 PM" src="https://github.com/user-attachments/assets/c9c3cb07-81f4-4f49-8629-ac2416ea88ff">
 
-
+Lastly, I assessed presence of benchmark universial single copy orthologs 
 
